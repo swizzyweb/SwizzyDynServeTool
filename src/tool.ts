@@ -1,11 +1,18 @@
 import { IBrowserToolkit, Tool, IToolInstaller} from '@swizzyweb/browser-toolkit-interface';
-import { ISwizzyDynServeWebServiceClient } from './dyn-serve-web-service-client';
+import { ISwizzyDynServeWebServiceClient } from './client/dyn-serve-web-service-client';
+import { ISwizzyDynServeToolClient } from './client/dyn-serve-tool-client';
 
 export interface ISwizzyDynServeToolProps {
 	browserToolkit: IBrowserToolkit;
 	//swizzyDynServeClient: ISwizzyDynServeClient;
 	rootApiUrl?: string; // ie: http://localhost:3005 , note: exlude /v1/manage/tools/download
  	webServiceClient: ISwizzyDynServeWebServiceClient;
+	toolClient: ISwizzyDynServeToolClient;
+};
+
+export interface IServiceProps {
+	serviceName: string;
+	port?: number;
 };
 
 export class SwizzyDynServeTool implements Tool {
@@ -17,27 +24,29 @@ export class SwizzyDynServeTool implements Tool {
 	private static readonly INSTALLER_TOOL_NAME = 'InstallerTool'
 	private rootApiUrl?: string;
 	private webServiceClient: ISwizzyDynServeWebServiceClient;
+	private _toolClient: ISwizzyDynServeToolClient;
     constructor(props: ISwizzyDynServeToolProps) {
-    	this.browserToolkit = props.browserToolkit;	
+    	this.browserToolkit = props.browserToolkit;
 		//this.swizzyDynServeClient = props.swizzyDynServeClient;
 		this.rootApiUrl = props.rootApiUrl;
 		this.webServiceClient = props.webServiceClient;
+		this._toolClient = props.toolClient;
 	}
 
-	async installService(props: {serviceName: string}) {
-		const response = await this.webServiceClient.installService({url: this.rootApiUrl!, serviceName: props.serviceName});
+	async installService(props: IServiceProps) {
+		const response = await this.webServiceClient.installService({url: this.rootApiUrl!, serviceName: props.serviceName, runArgs: props.port});
 		// Error handling
 		return response.data;
 	}
 
-	async runService(props: {serviceName: string}) {
-		const response = await this.webServiceClient.runService({url: this.rootApiUrl!, serviceName: props.serviceName});
+	async runService(props: IServiceProps) {
+		const response = await this.webServiceClient.runService({url: this.rootApiUrl!, serviceName: props.serviceName, port: props.port});
 		// Error handling
 		return response.data;
 	}
 
-	async stopService(props: {serviceName: string}) {
-		const response = await this.webServiceClient.stopService({url: this.rootApiUrl!, serviceName: props.serviceName});
+	async stopService(props: IServiceProps) {
+		const response = await this.webServiceClient.stopService({url: this.rootApiUrl!, serviceName: props.serviceName, port: props.port});
 		// Error handling
 		return response.data;
 	}
@@ -50,20 +59,34 @@ export class SwizzyDynServeTool implements Tool {
 		this.rootApiUrl = rootApiUrl;
 	}
 
-	installTool(props: {toolName: string}) {
+	async installTool(props: {toolName: string}) {
+		const response = await this._toolClient.installTool({url: this.rootApiUrl, toolName: props.toolName});
+
+		return response.data;
+	}
+	
+	async installToolToToolkit(props: {toolName: string}) {
 		const installerTool = this.browserToolkit.getTool('InstallerTool') as IToolInstaller;
-		installerTool.installTool({url: `${this.rootApiUrl}/v1/manage/tools/download?toolName=${props.toolName}`});
+		installerTool.installTool({url: `${this.rootApiUrl}/v1/tool/download?toolName=${props.toolName}`});
+	}
+	
+	async runTool(props: {toolName: string}) {
+		return (await this._toolClient.runTool({url: this.rootApiUrl, toolName: props.toolName})).data;
 	}
 
+	async stopTool(props: {toolName: string}) {
+		return (await this._toolClient.stopTool({url: this.rootApiUrl, toolName: props.toolName})).data;
+	}
 	
 	async getRunningWebServices(props: {}) {
-		const response = await this.webServiceClient.getRunningServices({});
+		const response = await this.webServiceClient.getRunningServices({url: this.rootApiUrl});
 		// error handling
 		return response.data;
 	}
 	
-	getRunningTools(props: {}) {
-		
+	async getRunningTools(props: {}) {
+		const response = await this._toolClient.getRunningTools({url: this.rootApiUrl});
+		return response.data;
 	}
 }
 

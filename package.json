@@ -1,6 +1,6 @@
 {
   "name": "@swizzyweb/swizzy-dyn-serve-tool",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "My webpack project",
   "main": "dist/main.js",
   "scripts": {
@@ -14,14 +14,6 @@
   },
   "author": "WannaWatchMeCode",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/wannawatchmecode/BrowserToolkit.git"
-  },
-  "bugs": {
-    "url": "https://github.com/wannawatchmecode/BrowserToolkit/issues"
-  },
-  "homepage": "https://github.com/wannawatchmecode/BrowserToolkit#readme",
   "devDependencies": {
     "@swizzyweb/browser-toolkit-interface": "^0.1.0",
     "@types/axios": "^0.14.0",
@@ -36,5 +28,22 @@
   },
   "dependencies": {
     "axios": "^1.7.7"
-  }
+  },
+  "keywords": [
+    "frontend",
+    "swizzy",
+    "web",
+    "service",
+    "dyn",
+    "serve",
+    "dynamic"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/swizzyweb/SwizzyDynServeTool.git"
+  },
+  "bugs": {
+    "url": "https://github.com/swizzyweb/SwizzyDynServeTool/issues"
+  },
+  "homepage": "https://github.com/swizzyweb/SwizzyDynServeTool#readme"
 }

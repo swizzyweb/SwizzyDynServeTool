@@ -13,6 +13,11 @@ export interface ISwizzyDynServeWebServiceClientProps {
 
 const API_PATH = '/v1/webservice';
 
+export interface IServiceProps {
+	serviceName: string;
+	port: string;
+};
+
 export class SwizzyDynServeWebServiceClient implements ISwizzyDynServeWebServiceClient {
 	
 	private _axios: Axios;
@@ -21,23 +26,34 @@ export class SwizzyDynServeWebServiceClient implements ISwizzyDynServeWebService
 	}
 
 	async installService(props: any): Promise<any> {
-		return await this._axios.post(`${props.url}${API_PATH}/install?serviceName=${props.serviceName}`); // TODO: define run args datastructure, it is currently defined in SwizzyDynServe I beleive. will need to be pulled out
+		return await this._axios.post(`${props.url}${API_PATH}/install?serviceName=${props.serviceName!}`); // TODO: define run args datastructure, it is currently defined in SwizzyDynServe I beleive. will need to be pulled out
+	}
+
+	getRunArgs(props: any): any {
+		return props.port ? {
+			runArgs: {
+				expressConfiguration: {
+					app: {
+						attachmentMode: "newApp",
+						port: props.port,
+					}
+				}
+			}//props.runArgs
+		} : undefined;
+
 	}
 
 	async runService(props: any): Promise<any> {
-		const args = props.runArgs ? {
-			runArgs: props.runArgs
-		} : undefined;
-		return await this._axios.post(`${props.url}${API_PATH}/run?serviceName=${props.serviceName}`, args);
+		const args = this.getRunArgs(props);
+		return await this._axios.post(`${props.url}${API_PATH}/run?serviceName=${props.serviceName!}`, args);
 		// TODO: define run args datastructure, it is currently defined in SwizzyDynServe I beleive. will need to be pulled out
 
 	}
 
 	async stopService(props: any): Promise<any> {
-		const args = props.stopArgs ? {
-			stopArgs: props.stopArgs
-		} : undefined;
-		return await this._axios.post(`${props.url}${API_PATH}/stop?serviceName=${props.serviceName}`, args);
+		const args = this.getRunArgs(props);
+
+		return await this._axios.post(`${props.url}${API_PATH}/stop?serviceName=${props.serviceName!}`, args);
 		// TODO: define run args datastructure, it is currently defined in SwizzyDynServe I beleive. will need to be pulled out
 
 	}
