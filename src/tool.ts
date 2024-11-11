@@ -13,6 +13,7 @@ export interface ISwizzyDynServeToolProps {
 export interface IServiceProps {
 	serviceName: string;
 	port?: number;
+  serviceArgs: any;
 };
 
 export class SwizzyDynServeTool implements Tool {
@@ -40,13 +41,13 @@ export class SwizzyDynServeTool implements Tool {
 	}
 
 	async runService(props: IServiceProps) {
-		const response = await this.webServiceClient.runService({url: this.rootApiUrl!, serviceName: props.serviceName, port: props.port});
+		const response = await this.webServiceClient.runService({url: this.rootApiUrl!, serviceName: props.serviceName, port: props.port, serviceArgs: props.serviceArgs});
 		// Error handling
 		return response.data;
 	}
 
 	async stopService(props: IServiceProps) {
-		const response = await this.webServiceClient.stopService({url: this.rootApiUrl!, serviceName: props.serviceName, port: props.port});
+		const response = await this.webServiceClient.stopService({url: this.rootApiUrl!, serviceName: props.serviceName, port: props.port, serviceArgs: props.serviceArgs});
 		// Error handling
 		return response.data;
 	}

@@ -16,6 +16,7 @@ const API_PATH = '/v1/webservice';
 export interface IServiceProps {
 	serviceName: string;
 	port: string;
+  serviceArgs: any
 };
 
 export class SwizzyDynServeWebServiceClient implements ISwizzyDynServeWebServiceClient {
@@ -30,17 +31,21 @@ export class SwizzyDynServeWebServiceClient implements ISwizzyDynServeWebService
 	}
 
 	getRunArgs(props: any): any {
-		return props.port ? {
-			runArgs: {
-				expressConfiguration: {
+		const expressConfiguration = props.port ? {
 					app: {
 						attachmentMode: "newApp",
 						port: props.port,
 					}
-				}
-			}//props.runArgs
-		} : undefined;
+			} : { app: {
+          attachmentMode: "parentApp",
+        }
+      }
 
+    const runArgs = {
+      expressConfiguration,
+      serviceArgs: props.serviceArgs
+    }
+    return runArgs;
 	}
 
 	async runService(props: any): Promise<any> {
